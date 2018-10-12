@@ -15,7 +15,7 @@ let connectDB;
 if (process.env.NODE_ENV === 'dev') {
     connectDB = 'mongodb://localhost:27017/cafe';
 } else {
-    connectDB = 'mongodb://qosho-late:contrasena1@ds129823.mlab.com:29823/cafe';
+    connectDB = process.env.MONGO_URI;
 }
 
 process.env.URLDB = connectDB;
