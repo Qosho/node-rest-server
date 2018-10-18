@@ -2,11 +2,13 @@ const express = require('express');
 const bcrypt = require('bcrypt-nodejs');
 const _ = require('underscore');
 const Usuario = require('../modelos/usuario')
+const { verificaToken, verificaAdmin_Role } = require('../middlewares/auteticacion')
 const app = express();
 let times = bcrypt.genSaltSync(10);
 
 //Lectura de registros
-app.get('/usuarios', function(req, res) {
+app.get('/usuarios', verificaToken, (req, res) => {
+
     let desde = req.query.desde || 0;
     desde = Number(desde);
     let limite = req.query.limite || 5;
@@ -33,7 +35,7 @@ app.get('/usuarios', function(req, res) {
 });
 
 //Creacion de registo
-app.post('/usuarios', function(req, res) {
+app.post('/usuarios', [verificaToken, verificaAdmin_Role], function(req, res) {
     let body = req.body;
 
     //Modelo para usuario
@@ -59,7 +61,7 @@ app.post('/usuarios', function(req, res) {
 });
 
 //Actualizacion de registros
-app.put('/usuarios/:id', function(req, res) {
+app.put('/usuarios/:id', [verificaToken, verificaAdmin_Role], function(req, res) {
 
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'mail', 'img, role', 'estado']);
@@ -82,7 +84,7 @@ app.put('/usuarios/:id', function(req, res) {
 });
 
 //Eliminacion de registros
-app.delete('/usuarios/:id', function(req, res) {
+app.delete('/usuarios/:id', [verificaToken, verificaAdmin_Role], function(req, res) {
     let id = req.params.id;
     let cambiaEStado = {
         estado: false
